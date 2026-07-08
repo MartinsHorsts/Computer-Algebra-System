@@ -4,9 +4,9 @@ use iced::{Color, Element};
 use iced::widget::{column, text, text_input};
 
 
-fn main() {
+fn main() -> iced::Result {
     iced::application(AppState::default, update, view)
-        .run();
+        .run()
 }
 
 struct AppState {
@@ -49,7 +49,7 @@ fn view(state: &AppState) -> Element<'_, Message> {
         let text_color = match token {
             Token::Number(_) => Color::from_rgb8(180, 140, 250),
             Token::Identifier(_) => Color::from_rgb8(100,200,250),
-            Token::Plus | Token::Minus | Token::Equal => Color::from_rgb8(250,180,100),
+            Token::Plus | Token::Minus | Token::Equal | Token::Div | Token::Mult => Color::from_rgb8(250,180,100),
             Token::Error(_) => Color::from_rgb8(255,0,0),
             _ => Color::from_rgb8(200,200,200),
 

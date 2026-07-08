@@ -7,6 +7,8 @@ pub enum Token {
         Number(i64),
         Plus,
         Minus,
+        Mult,
+        Div,
         Equal,
         EOF,
         Error(String),
@@ -30,6 +32,8 @@ impl<'a> Lexer<'a> {
             Some('+') => Token::Plus,
             Some('-') => Token::Minus,
             Some('=') => Token::Equal,
+            Some('/') => Token::Div,
+            Some('*') => Token::Mult,
 
             Some(c) if c.is_ascii_digit() => {
                 let mut num_str = c.to_string();
