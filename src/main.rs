@@ -1,5 +1,6 @@
 mod parser;
-use iced::{Element};
+use parser::Token;
+use iced::{Color, Element};
 use iced::widget::{column, text, text_input};
 
 
@@ -41,13 +42,23 @@ fn view(state: &AppState) -> Element<'_, Message> {
     let input_field = text_input("Enter your input here!", &state.user_input)
         .on_input(Message::InputChanged);
 
-    let token_lines = state.parsed_input
-        .iter()
-        .map(|token| format!("{:?}", token))
-        .collect::<Vec<String>>()
-        .join("\n");
-    
-    let parsed_text = text(token_lines);
+    let mut parsed_text = column![]
+        .spacing(5);
+
+    for token in &state.parsed_input {
+        let text_color = match token {
+            Token::Number(_) => Color::from_rgb8(180, 140, 250),
+            Token::Identifier(_) => Color::from_rgb8(100,200,250),
+            Token::Plus | Token::Minus | Token::Equal => Color::from_rgb8(250,180,100),
+            Token::Error(_) => Color::from_rgb8(255,0,0),
+            _ => Color::from_rgb8(200,200,200),
+
+        };
+        parsed_text = parsed_text.push(
+            text(format!("{:?}", token))
+                .color(text_color)
+        )
+    }
 
     column![input_field, parsed_text]
         .into()

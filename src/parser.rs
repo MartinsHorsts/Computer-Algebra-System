@@ -8,7 +8,8 @@ pub enum Token {
         Plus,
         Minus,
         Equal,
-        EOF
+        EOF,
+        Error(String),
     }
 
 pub struct Lexer<'a> {
@@ -57,7 +58,7 @@ impl<'a> Lexer<'a> {
             }
 
             None => Token::EOF,
-            _ => panic!("Unexpected character encountered!"),
+            _ => Token::Error(String::from("Unknown token found")),
         }
 
 
