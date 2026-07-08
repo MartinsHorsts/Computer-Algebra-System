@@ -41,8 +41,12 @@ impl<'a> Lexer<'a> {
                         break;
                     }
                 }
-                Token::Number(num_str.parse::<i64>().unwrap())
+
+                match num_str.parse::<i64>() {
+                    Ok(valid_num) => Token::Number(valid_num),
+                    Err(_) => Token::Error(format!("Number '{}' is too large for a 64 bit integer", num_str)),
                 }
+            }
 
             Some(c) if c.is_ascii_alphabetic() => {
                 let mut ident_str = c.to_string();
