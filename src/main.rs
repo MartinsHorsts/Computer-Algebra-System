@@ -1,5 +1,6 @@
+mod tokeniser;
 mod parser;
-use parser::Token;
+use tokeniser::Token;
 use iced::{Color, Element};
 use iced::widget::{column, text, text_input};
 
@@ -11,14 +12,14 @@ fn main() -> iced::Result {
 
 struct AppState {
     user_input: String,
-    parsed_input: Vec<parser::Token>,
+    parsed_input: Vec<tokeniser::Token>,
 }
 
 impl Default for AppState {
     fn default() -> Self {
         Self { 
             user_input: String::from(" "),
-            parsed_input: parser::Lexer::new(" ").collect()
+            parsed_input: tokeniser::Lexer::new(" ").collect()
         }
     }
 }
@@ -32,7 +33,7 @@ fn update(state: &mut AppState, message: Message) {
     match message{
         Message::InputChanged(new_input) => {
             state.user_input = new_input;
-            state.parsed_input = parser::Lexer::new(&state.user_input).collect();
+            state.parsed_input = tokeniser::Lexer::new(&state.user_input).collect();
         }
     }
 }
