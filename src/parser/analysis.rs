@@ -46,7 +46,8 @@ pub fn compute_first_sets(grammar: &GrammarSpec) -> HashMap<String, HashSet<Stri
 
 pub fn compute_follow_sets(
     grammar: &GrammarSpec, 
-    first_sets: &HashMap<String, HashSet<String>> ) -> HashMap<String, HashSet<String>> {
+    first_sets: &HashMap<String, HashSet<String>> 
+    ) -> HashMap<String, HashSet<String>> {
     
     let mut follow_sets: HashMap<String, HashSet<String>> = HashMap::new();
 

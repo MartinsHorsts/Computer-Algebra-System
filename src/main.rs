@@ -47,7 +47,8 @@ fn view(state: &AppState) -> Element<'_, Message> {
         .spacing(5);
 
     for token in &state.parsed_input {
-        let text_color = match token {
+
+        let text_color = match token { 
             Token::Number(_) => Color::from_rgb8(180, 140, 250),
             Token::Identifier(_) => Color::from_rgb8(100,200,250),
             Token::Plus | Token::Minus | Token::Equal | Token::Div | Token::Mult => Color::from_rgb8(250,180,100),
@@ -55,10 +56,16 @@ fn view(state: &AppState) -> Element<'_, Message> {
             _ => Color::from_rgb8(200,200,200),
 
         };
+
         parsed_text = parsed_text.push(
             text(format!("{:?}", token))
                 .color(text_color)
-        )
+        );
+
+        match token {
+            Token::Error(_) => break,
+            _ => continue,
+        }
     }
 
     column![input_field, parsed_text]
