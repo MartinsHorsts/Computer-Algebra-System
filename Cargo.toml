@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 iced = "0.14.0"
 mathjax-svg-rs = "0.4.0"
+rkyv = {version = "0.8.17", features = ["std", "bytecheck"] }

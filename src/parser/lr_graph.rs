@@ -74,7 +74,7 @@ pub fn goto(
             if next_symbol == symbol {
                 advanced_items.insert(Lr0Item { 
                     rule_id: item.rule_id, 
-                    dot_position: item.dot_position - 1, 
+                    dot_position: item.dot_position + 1, 
                 });
             }
         }

@@ -1,14 +1,14 @@
 use std::collections::{HashMap, HashSet};
 use crate::parser::{lr_graph::LrAutomaton, types::{GrammarSpec, Symbol}};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub enum Action {
     Shift(usize),
     Reduce(usize),
     Accept,
 }
 
-#[derive(Debug)]
+#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct ParsingTable {
     pub action_table: HashMap<(usize, String), Action>,
     pub goto_table: HashMap<(usize, String), usize>,
@@ -56,9 +56,9 @@ pub fn build_parsing_table (
                                     Action::Shift(_) => {
                                         panic!("Shift/Reduce conflict found in State {} on terminal '{}' when trying to reduce rule {}", state.id, terminal, rule.id);
                                     }
-                                    Action::Reduce(Old_id) => {
-                                        if *Old_id != rule.id {
-                                            panic!("Shift/Reduce conflict found in State {} on terminal '{}' between rule {} and rule {}.", state.id, terminal, Old_id, rule.id,)
+                                    Action::Reduce(old_id) => {
+                                        if *old_id != rule.id {
+                                            panic!("Shift/Reduce conflict found in State {} on terminal '{}' between rule {} and rule {}.", state.id, terminal, old_id, rule.id,)
                                         }
                                     }
                                     Action::Accept => {}

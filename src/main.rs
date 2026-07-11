@@ -4,8 +4,13 @@ use tokeniser::Token;
 use iced::{Color, Element};
 use iced::widget::{column, text, text_input};
 
+use crate::parser::{build_table_from_grammar, print_parsing_table};
+
 
 fn main() -> iced::Result {
+    let parsing_table = build_table_from_grammar();
+    print_parsing_table(&parsing_table);
+
     iced::application(AppState::default, update, view)
         .run()
 }
