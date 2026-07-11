@@ -1,7 +1,6 @@
 mod tokeniser;
 mod parser;
-use tokeniser::Token;
-use iced::{Color, Element};
+use iced::{Element};
 use iced::widget::{column, text, text_input};
 
 use crate::parser::{build_table_from_grammar, print_parsing_table};
@@ -17,7 +16,7 @@ fn main() -> iced::Result {
 
 struct AppState {
     user_input: String,
-    parsed_input: Vec<tokeniser::Token>,
+    parsed_input: Vec<tokeniser::TokenEnum>,
 }
 
 impl Default for AppState {
@@ -52,25 +51,8 @@ fn view(state: &AppState) -> Element<'_, Message> {
         .spacing(5);
 
     for token in &state.parsed_input {
-
-        let text_color = match token { 
-            Token::Number(_) => Color::from_rgb8(180, 140, 250),
-            Token::Identifier(_) => Color::from_rgb8(100,200,250),
-            Token::Plus | Token::Minus | Token::Equal | Token::Div | Token::Mult => Color::from_rgb8(250,180,100),
-            Token::Error(_) => Color::from_rgb8(255,0,0),
-            _ => Color::from_rgb8(200,200,200),
-
-        };
-
         parsed_text = parsed_text.push(
-            text(format!("{:?}", token))
-                .color(text_color)
-        );
-
-        match token {
-            Token::Error(_) => break,
-            _ => continue,
-        }
+            text(format!("{:?}", token)));
     }
 
     column![input_field, parsed_text]

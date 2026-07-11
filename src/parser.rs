@@ -34,7 +34,7 @@ pub fn print_parsing_table(table: &ParsingTable) {
     }
 
     println!("\n=================================================================");
-    println!("                     COMPILED LALR(1) PARSING TABLE              ");
+    println!("                     COMPILED SLR(1) PARSING TABLE              ");
     println!("=================================================================");
 
     // 2. Loop through each state sequentially

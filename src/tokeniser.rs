@@ -2,14 +2,14 @@ use std::iter::Peekable;
 use std::str::Chars;
 
 #[derive(Debug, PartialEq)]
-pub enum Token {
+pub enum TokenEnum {
         Identifier(String),
         Number(i64),
-        Plus,
-        Minus,
-        Mult,
-        Div,
-        Equal,
+        PLUS,
+        MINUS,
+        MULT,
+        DIV,
+        EQUAL,
         EOF,
         Error(String),
     }
@@ -25,15 +25,15 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn next_token(&mut self) -> Token {
+    fn next_token(&mut self) -> TokenEnum {
         self.skip_whitespace();
 
         match self.chars.next() {
-            Some('+') => Token::Plus,
-            Some('-') => Token::Minus,
-            Some('=') => Token::Equal,
-            Some('/') => Token::Div,
-            Some('*') => Token::Mult,
+            Some('+') => TokenEnum::PLUS,
+            Some('-') => TokenEnum::MINUS,
+            Some('=') => TokenEnum::EQUAL,
+            Some('/') => TokenEnum::DIV,
+            Some('*') => TokenEnum::MULT,
 
             Some(c) if c.is_ascii_digit() => {
                 let mut num_str = c.to_string();
@@ -47,8 +47,8 @@ impl<'a> Lexer<'a> {
                 }
 
                 match num_str.parse::<i64>() {
-                    Ok(valid_num) => Token::Number(valid_num),
-                    Err(_) => Token::Error(format!("Number '{}' is too large for a 64 bit integer", num_str)),
+                    Ok(valid_num) => TokenEnum::Number(valid_num),
+                    Err(_) => TokenEnum::Error(format!("Number '{}' is too large for a 64 bit integer", num_str)),
                 }
             }
 
@@ -62,11 +62,11 @@ impl<'a> Lexer<'a> {
                         break;
                     }
                 }
-                Token::Identifier(ident_str)
+                TokenEnum::Identifier(ident_str)
             }
 
-            None => Token::EOF,
-            _ => Token::Error(String::from("Unknown token found")),
+            None => TokenEnum::EOF,
+            _ => TokenEnum::Error(String::from("Unknown token found")),
         }
 
 
@@ -84,11 +84,11 @@ impl<'a> Lexer<'a> {
 }
 
 impl<'a> Iterator for Lexer<'a> {
-        type Item = Token;
+        type Item = TokenEnum;
 
         fn next(&mut self) -> Option<Self::Item> {
             match self.next_token() {
-                Token::EOF => None,
+                TokenEnum::EOF => None,
                 token => Some(token),
             }
         }

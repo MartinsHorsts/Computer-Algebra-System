@@ -10,8 +10,8 @@ pub enum Action {
 
 #[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct ParsingTable {
-    pub action_table: HashMap<(usize, String), Action>,
-    pub goto_table: HashMap<(usize, String), usize>,
+    pub action_table: HashMap<(usize, String), Action>, // (ID, Symbol), Action
+    pub goto_table: HashMap<(usize, String), usize>, // (ID, Symbol), Action
 }
 
 pub fn build_parsing_table (
