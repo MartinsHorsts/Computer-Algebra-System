@@ -2,7 +2,7 @@ use std::iter::Peekable;
 use std::str::Chars;
 
 #[derive(Debug)]
-enum TokenType {
+pub enum TokenType {
         VARIABLE,
         NUMBER,
         PLUS,
@@ -18,7 +18,7 @@ enum TokenType {
 }
 
 #[derive(Debug)]
-enum TokenData {
+pub enum TokenData {
     Number(i64),
     Variable(String),
     Function(String),
@@ -28,10 +28,9 @@ enum TokenData {
 
 #[derive(Debug)]
 pub struct Token {
-    token_type: TokenType,
-    token_data: TokenData,
+    pub token_type: TokenType,
+    pub token_data: TokenData,
 }
-
 
 
 pub struct Lexer<'a> {
@@ -115,7 +114,6 @@ impl<'a> Iterator for Lexer<'a> {
         fn next(&mut self) -> Option<Self::Item> {
             let next_token = self.next_token();
             match next_token.token_type {
-                TokenType::Error => None,
                 TokenType::EOF => None,
                 _ => Some(next_token),
             }

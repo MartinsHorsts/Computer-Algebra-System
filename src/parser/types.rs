@@ -6,11 +6,20 @@ pub enum Symbol {
     NonTerminal(String),
 }
 
+#[derive(Debug, Clone)]
+pub enum Shapes {
+    Binary, 
+    Passthrough,
+    Parenthesized,
+    Leaf,
+}
+
 #[derive(Debug,Clone)]
 pub struct ProductionRule {
     pub id: usize,
     pub lhs: String,
     pub rhs: Vec<Symbol>,
+    pub rule_shape: Shapes,
 }
 
 #[derive(Debug)]
@@ -34,7 +43,8 @@ impl GrammarSpec {
             rhs: vec![
                 Symbol::NonTerminal(self.start_symbol.clone()),
                 Symbol::Terminal("$".to_string()),
-            ]
+            ],
+            rule_shape: Shapes::Binary
         };
 
         self.rules.insert(0, augmented_rule);

@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use std::path::Path;
 
-use crate::parser::types::{GrammarSpec, ProductionRule, Symbol};
+use crate::parser::types::{GrammarSpec, ProductionRule, Shapes, Symbol};
 
 pub fn load_grammar_from_file<P: AsRef<Path>>(path: P) -> io::Result<GrammarSpec> {
     let file = File::open(path)?;
@@ -31,28 +31,28 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
             continue;
         }
 
-        if let Some(tokens_part) = line.strip_prefix("%tokens") {
+        if let Some(tokens_part) = line.strip_prefix("%tokens") { // Get tokens from start of .grammar
             for token in tokens_part.split_whitespace() {
                 terminals.insert(token.to_string());
             }
             continue;
         }
 
-        let (lhs_raw, rhs_raw) = line.split_once("->").unwrap_or_else(|| {
+        let (lhs_raw, rhs_raw) = line.split_once("->").unwrap_or_else(|| { // Split on '->'
             panic!("Grammar error on line {}: Expected '->' separator but none found ", line_num)
         });
 
-        let lhs = lhs_raw.trim().to_string();
+        let lhs = lhs_raw.trim().to_string(); // Remove whitespaces and convert to string
 
-        if lhs.is_empty() {
+        if lhs.is_empty() { // Check Left Hand Side
             panic!("Grammar error on line {}: Left-Hand side cannot be empty", line_num)
         }
 
-        non_terminals.insert(lhs.clone());
+        non_terminals.insert(lhs.clone()); // Add left hand side symbol to non-terminals
 
         for alternate in rhs_raw.split('|') {
             let mut rhs_symbols = Vec::new();
-
+            let mut rule_shape: Shapes = Shapes::Leaf;
             for symbol_str in alternate.split_whitespace() {
                 let symbol = if terminals.contains(symbol_str) {
                     Symbol::Terminal(symbol_str.to_string())
@@ -60,7 +60,20 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
                     non_terminals.insert(symbol_str.to_string());
                     Symbol::NonTerminal(symbol_str.to_string())
                 };
-                rhs_symbols.push(symbol);
+
+                if symbol_str.contains("*") {
+                    let symbol = symbol_str.trim_matches('*');
+                    println!("{}",symbol);
+                    match symbol {
+                        "Binary" => {rule_shape = Shapes::Binary},
+                        "Leaf" => {rule_shape = Shapes::Leaf},
+                        "Passthrough" => {rule_shape = Shapes::Passthrough},
+                        "Parenthesized" => {rule_shape = Shapes::Parenthesized},
+                        _ => panic!("Unkown rule shape found!")
+                    }
+                } else {
+                    rhs_symbols.push(symbol);
+                }
             }
 
             if rhs_symbols.is_empty() {
@@ -71,6 +84,7 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
                 id: rule_id_counter, 
                 lhs: lhs.clone(),
                 rhs: rhs_symbols,
+                rule_shape: rule_shape,
             });
             rule_id_counter += 1;
 

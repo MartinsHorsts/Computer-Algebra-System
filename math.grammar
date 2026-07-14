@@ -1,5 +1,5 @@
 %tokens NUMBER VARIABLE PLUS MINUS MULT DIV LPAREN RPAREN
 
-E -> E PLUS T | E MINUS T | T
-T -> T MULT F | T DIV F | F
-F -> LPAREN E RPAREN | NUMBER | VARIABLE
+E -> E PLUS T *Binary | E MINUS T *Binary | T *Passthrough
+T -> T MULT F *Binary | T DIV F *Binary| F *Passthrough
+F -> LPAREN E RPAREN *Parenthesized | NUMBER *Leaf | VARIABLE *Leaf
