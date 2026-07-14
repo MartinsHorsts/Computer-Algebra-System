@@ -1,18 +1,38 @@
 use std::iter::Peekable;
 use std::str::Chars;
 
-#[derive(Debug, PartialEq)]
-pub enum TokenEnum {
-        Identifier(String),
-        Number(i64),
+#[derive(Debug)]
+enum TokenType {
+        VARIABLE,
+        NUMBER,
         PLUS,
         MINUS,
         MULT,
         DIV,
+        LPAREN,
+        RPAREN,
         EQUAL,
+        FUNCTION,
         EOF,
-        Error(String),
-    }
+        Error,
+}
+
+#[derive(Debug)]
+enum TokenData {
+    Number(i64),
+    Variable(String),
+    Function(String),
+    ErrorMessage(String),
+    None,
+}
+
+#[derive(Debug)]
+pub struct Token {
+    token_type: TokenType,
+    token_data: TokenData,
+}
+
+
 
 pub struct Lexer<'a> {
     chars: Peekable<Chars<'a>>,
@@ -25,15 +45,17 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn next_token(&mut self) -> TokenEnum {
+    fn next_token(&mut self) -> Token {
         self.skip_whitespace();
 
         match self.chars.next() {
-            Some('+') => TokenEnum::PLUS,
-            Some('-') => TokenEnum::MINUS,
-            Some('=') => TokenEnum::EQUAL,
-            Some('/') => TokenEnum::DIV,
-            Some('*') => TokenEnum::MULT,
+            Some('+') => Token { token_type: TokenType::PLUS,   token_data: TokenData::None },
+            Some('-') => Token { token_type: TokenType::MINUS,  token_data: TokenData::None },
+            Some('=') => Token { token_type: TokenType::EQUAL,  token_data: TokenData::None },
+            Some('/') => Token { token_type: TokenType::DIV,    token_data: TokenData::None },
+            Some('*') => Token { token_type: TokenType::MULT,   token_data: TokenData::None },
+            Some('(') => Token { token_type: TokenType::LPAREN, token_data: TokenData::None },
+            Some(')') => Token { token_type: TokenType::RPAREN, token_data: TokenData::None },
 
             Some(c) if c.is_ascii_digit() => {
                 let mut num_str = c.to_string();
@@ -47,8 +69,8 @@ impl<'a> Lexer<'a> {
                 }
 
                 match num_str.parse::<i64>() {
-                    Ok(valid_num) => TokenEnum::Number(valid_num),
-                    Err(_) => TokenEnum::Error(format!("Number '{}' is too large for a 64 bit integer", num_str)),
+                    Ok(valid_num) => Token {token_type: TokenType::NUMBER, token_data: TokenData::Number(valid_num)},
+                    Err(_) => Token {token_type: TokenType::Error, token_data: TokenData::ErrorMessage(format!("Number '{}' is too large for a 64 bit integer", num_str))},
                 }
             }
 
@@ -62,11 +84,15 @@ impl<'a> Lexer<'a> {
                         break;
                     }
                 }
-                TokenEnum::Identifier(ident_str)
+                if ident_str.len() == 1 {
+                    Token { token_type: TokenType::VARIABLE, token_data: TokenData::Variable(ident_str) }
+                } else {
+                    Token { token_type: TokenType::FUNCTION, token_data: TokenData::Function(ident_str) }
+                }
             }
 
-            None => TokenEnum::EOF,
-            _ => TokenEnum::Error(String::from("Unknown token found")),
+            None => Token { token_type: TokenType::EOF, token_data: TokenData::None },
+            _ =>    Token { token_type: TokenType::Error, token_data: TokenData::ErrorMessage("Unkown character found!".to_string())},
         }
 
 
@@ -84,12 +110,14 @@ impl<'a> Lexer<'a> {
 }
 
 impl<'a> Iterator for Lexer<'a> {
-        type Item = TokenEnum;
+        type Item = Token;
 
         fn next(&mut self) -> Option<Self::Item> {
-            match self.next_token() {
-                TokenEnum::EOF => None,
-                token => Some(token),
+            let next_token = self.next_token();
+            match next_token.token_type {
+                TokenType::Error => None,
+                TokenType::EOF => None,
+                _ => Some(next_token),
             }
         }
     }

@@ -16,7 +16,7 @@ fn main() -> iced::Result {
 
 struct AppState {
     user_input: String,
-    parsed_input: Vec<tokeniser::TokenEnum>,
+    parsed_input: Vec<tokeniser::Token>,
 }
 
 impl Default for AppState {
