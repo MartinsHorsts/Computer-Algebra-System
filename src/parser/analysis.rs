@@ -100,11 +100,9 @@ pub fn compute_follow_sets(
                     if b_follows.len() > old_size {
                         changed = true;
                     }
-
                 }
             }
         }
     }
-
     follow_sets
 }

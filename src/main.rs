@@ -1,9 +1,13 @@
 mod tokeniser;
 mod parser;
+
 use iced::{Element};
 use iced::widget::{column, text, text_input};
 
-use crate::parser::{build_table_from_grammar, print_parsing_table};
+use crate::parser::driver::{Expr, ParserError, parse_input};
+use crate::parser::{ParsingTable, build_table_from_grammar, load_grammar_from_file, print_parsing_table};
+use crate::parser::types::{GrammarSpec};
+
 
 
 fn main() -> iced::Result {
@@ -17,13 +21,25 @@ fn main() -> iced::Result {
 struct AppState {
     user_input: String,
     parsed_input: Vec<tokeniser::Token>,
+    grammar: GrammarSpec,
+    table: ParsingTable,
+    ast_result: Result<Expr, ParserError>,
 }
 
 impl Default for AppState {
     fn default() -> Self {
+        let grammar = load_grammar_from_file("math.grammar").unwrap();
+        let table = build_table_from_grammar();
+        print_parsing_table(&table);
+        let lexer = tokeniser::Lexer::new(" ");
+        let ast_result = parse_input(lexer.clone(), &grammar, &table);
+
         Self { 
             user_input: String::from(" "),
-            parsed_input: tokeniser::Lexer::new(" ").collect()
+            parsed_input: lexer.collect(),
+            grammar,
+            table,
+            ast_result,
         }
     }
 }
@@ -37,7 +53,9 @@ fn update(state: &mut AppState, message: Message) {
     match message{
         Message::InputChanged(new_input) => {
             state.user_input = new_input;
-            state.parsed_input = tokeniser::Lexer::new(&state.user_input).collect();
+            let lexer = tokeniser::Lexer::new(&state.user_input);
+            state.parsed_input = lexer.clone().collect();
+            state.ast_result = parse_input(lexer, &state.grammar, &state.table);
         }
     }
 }
@@ -55,6 +73,11 @@ fn view(state: &AppState) -> Element<'_, Message> {
             text(format!("{:?}", token)));
     }
 
-    column![input_field, parsed_text]
+    let ast_text = match &state.ast_result {
+        Ok(expr) => format!("{:#?}", expr),
+        Err(e) => format!("Parse error: found {}, expected one of {}", e.found, e.expected)
+    };
+
+    column![input_field, parsed_text, text(ast_text)]
         .into()
 }

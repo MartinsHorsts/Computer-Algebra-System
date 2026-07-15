@@ -17,7 +17,7 @@ pub enum TokenType {
         Error,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum TokenData {
     Number(i64),
     Variable(String),
@@ -32,7 +32,7 @@ pub struct Token {
     pub token_data: TokenData,
 }
 
-
+#[derive(Clone)]
 pub struct Lexer<'a> {
     chars: Peekable<Chars<'a>>,
 }
