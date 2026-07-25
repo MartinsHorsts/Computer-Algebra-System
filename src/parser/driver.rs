@@ -188,10 +188,7 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 StackValue::Term(token_data) => {
                     match token_data {
                         TokenData::Function(f_name) => f_name,
-                        TokenData::None => panic!("No token data!"),
-                        TokenData::Variable(var) => var, // For testing, should remove
-                        TokenData::ErrorMessage(err) => panic!("{}" ,err),
-                        TokenData::Number(_) => panic!("Token data is a number somehow")
+                        _ => panic!("TokenData of Function is not of type Function")
                     }
                 } 
             };
