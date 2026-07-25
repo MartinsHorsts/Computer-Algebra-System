@@ -21,7 +21,7 @@ pub enum TokenType {
 pub enum TokenData {
     Number(i64),
     Variable(String),
-    Function(String),
+    Function(String), 
     ErrorMessage(String),
     None,
 }

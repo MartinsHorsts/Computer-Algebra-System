@@ -12,6 +12,7 @@ pub enum Shapes {
     Passthrough,
     Parenthesized,
     Leaf,
+    Function
 }
 
 #[derive(Debug,Clone)]

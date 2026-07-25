@@ -1,5 +1,6 @@
-%tokens NUMBER VARIABLE PLUS MINUS MULT DIV LPAREN RPAREN
+%tokens NUMBER VARIABLE PLUS MINUS MULT DIV LPAREN RPAREN FUNCTION
 
 E -> E PLUS T *Binary | E MINUS T *Binary | T *Passthrough
 T -> T MULT F *Binary | T DIV F *Binary| F *Passthrough
-F -> LPAREN E RPAREN *Parenthesized | NUMBER *Leaf | VARIABLE *Leaf
+F -> FUNCTION LPAREN E RPAREN *Function
+F -> LPAREN E RPAREN *Parenthesized | NUMBER *Leaf | VARIABLE *Leaf 

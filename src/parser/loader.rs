@@ -62,6 +62,7 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
                         "Leaf" => {rule_shape = Shapes::Leaf},
                         "Passthrough" => {rule_shape = Shapes::Passthrough},
                         "Parenthesized" => {rule_shape = Shapes::Parenthesized},
+                        "Function" => {rule_shape = Shapes::Function},
                         _ => panic!("Unkown rule shape found!")
                     }
                 } else {
@@ -90,10 +91,6 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
         }
 
     }
-
-   // let start_symbol = rules.first()
-   //     .map(|r| r.lhs.clone())
-   //     .unwrap_or_else(|| panic!("Grammar error: No valid production rules were processed"));
 
     let start_symbol = rules.first().unwrap().lhs.clone();
 

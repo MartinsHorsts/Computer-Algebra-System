@@ -1,10 +1,11 @@
-use crate::{parser::{Action, ParsingTable, types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
+use crate::{parser::{Action, ParsingTable,types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
 use crate::tokeniser::TokenData;
 
 #[derive(Debug)]
 pub enum Expr {
     Number(i64),
     Variable(String),
+    Function(String,Box<Expr>), // Change 'String' Option to function type when function list is implemented
     Add(Box<Expr>,Box<Expr>),
     Sub(Box<Expr>,Box<Expr>),
     Mul(Box<Expr>,Box<Expr>),
@@ -98,8 +99,8 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 panic!("Expected 1 child, instead has '{}' children.",children.len());
             }
             match children.remove(0) {
-                StackValue::Term(TokenData::Number(n)) => Expr::Number(n),
-                StackValue::Term(TokenData::Variable(v)) => Expr::Variable(v),
+                StackValue::Term(TokenData::Number(num)) => Expr::Number(num),
+                StackValue::Term(TokenData::Variable(var)) => Expr::Variable(var),
                 _ => panic!("Expected Number or Variable")
             }
         }
@@ -130,7 +131,6 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 StackValue::Term(term) => {
                     match term {
                         TokenData::Number(n) => Box::new(Expr::Number(n)),
-                        TokenData::Function(f) => Box::new(Expr::Variable(f)), // TO BE CHANGED!
                         TokenData::Variable(v) => Box::new(Expr::Variable(v)),
                         _ => panic!("Malformed Data!")
                     }
@@ -144,7 +144,6 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 StackValue::Term(term) => {
                     match term {
                         TokenData::Number(n) => Box::new(Expr::Number(n)),
-                        TokenData::Function(f) => Box::new(Expr::Variable(f)), // TO BE CHANGED!
                         TokenData::Variable(v) => Box::new(Expr::Variable(v)),
                         _ => panic!("Malformed Data!")
                     }
@@ -163,6 +162,41 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
             } else {
                 panic!("A")
             }
+        }
+
+        Shapes::Function => {
+
+            if children.len() != 4 {
+                panic!("Expected 4 children, instead has {} children.", children.len())
+            };
+
+            children.pop();
+
+            let parameter = match children.pop().unwrap() {
+                StackValue::Node(node) => Box::new(node),
+                StackValue::Term(term) => match term {
+                    TokenData::Number(num) => Box::new(Expr::Number(num)),
+                    TokenData::Variable(var) => Box::new(Expr::Variable(var)),
+                    _ => panic!("a")
+                },
+            };
+
+            children.pop();
+
+            let function_name = match children.pop().unwrap() {
+                StackValue::Node(_) => panic!("Function name is a node??"),
+                StackValue::Term(token_data) => {
+                    match token_data {
+                        TokenData::Function(f_name) => f_name,
+                        TokenData::None => panic!("No token data!"),
+                        TokenData::Variable(var) => var, // For testing, should remove
+                        TokenData::ErrorMessage(err) => panic!("{}" ,err),
+                        TokenData::Number(_) => panic!("Token data is a number somehow")
+                    }
+                } 
+            };
+
+            Expr::Function(function_name, parameter)
         }
     }
 }

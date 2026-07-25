@@ -11,9 +11,6 @@ use crate::parser::types::{GrammarSpec};
 
 
 fn main() -> iced::Result {
-    let parsing_table = build_table_from_grammar();
-    print_parsing_table(&parsing_table);
-
     iced::application(AppState::default, update, view)
         .run()
 }
