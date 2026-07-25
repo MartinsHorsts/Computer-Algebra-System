@@ -1,5 +1,3 @@
-use std::collections::{HashMap, HashSet};
-
 use crate::{parser::{Action, ParsingTable, types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
 use crate::tokeniser::TokenData;
 
@@ -33,7 +31,7 @@ pub fn parse_input(
 
     let mut lookahead_iter = tokens.clone().peekable();
     let mut current_lookahead = match lookahead_iter.next() {
-        Some(tok) => tok,
+        Some(token) => token,
         None => return Err(ParserError { found: "End of Input".to_string(), expected: "an expression".to_string() })
     };
 
@@ -50,7 +48,10 @@ pub fn parse_input(
             Action::Shift(next_state) => {
                 value_stack.push(StackValue::Term(current_lookahead.token_data.clone()));
                 state_stack.push(next_state.clone());
-                current_lookahead = lookahead_iter.next().unwrap(); // MUST CHANGE,
+                current_lookahead = match lookahead_iter.next() {
+                    Some(token) => token,
+                    None => Token {token_type: TokenType::EOF, token_data: TokenData::None }
+                }; 
             }
 
             Action::Reduce(rule_id) => {

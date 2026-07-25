@@ -56,7 +56,7 @@ pub fn compute_follow_sets(
     }
 
     if let Some(start_set) = follow_sets.get_mut(&grammar.start_symbol) {
-        start_set.insert("$".to_string());
+        start_set.insert("EOF".to_string());
     }
     
     let mut changed = true;

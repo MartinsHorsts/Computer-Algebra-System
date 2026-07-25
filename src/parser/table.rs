@@ -44,7 +44,7 @@ pub fn build_parsing_table (
 
             if item.dot_position == rule.rhs.len() {
                 if item.rule_id == 0 {
-                    action_table.insert((state.id, "$".to_string()), Action::Accept);
+                    action_table.insert((state.id, "EOF".to_string()), Action::Accept);
                 } else {
                     if let Some(follows) = follow_sets.get(&rule.lhs) {
                         for terminal in follows {
