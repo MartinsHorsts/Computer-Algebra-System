@@ -1,14 +1,14 @@
 use std::collections::{HashMap, HashSet};
 use crate::parser::{lr_graph::LrAutomaton, types::{GrammarSpec, Symbol}};
 
-#[derive(Debug, Clone, PartialEq, Eq, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Action {
     Shift(usize),
     Reduce(usize),
     Accept,
 }
 
-#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Debug)]
 pub struct ParsingTable {
     pub action_table: HashMap<(usize, String), Action>, // (ID, Symbol), Action
     pub goto_table: HashMap<(usize, String), usize>, // (ID, Symbol), Action
