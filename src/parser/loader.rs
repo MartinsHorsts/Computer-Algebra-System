@@ -54,13 +54,6 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
             let mut rhs_symbols = Vec::new();
             let mut rule_shape: Shapes = Shapes::Leaf;
             for symbol_str in alternate.split_whitespace() {
-                let symbol = if terminals.contains(symbol_str) {
-                    Symbol::Terminal(symbol_str.to_string())
-                } else {
-                    non_terminals.insert(symbol_str.to_string());
-                    Symbol::NonTerminal(symbol_str.to_string())
-                };
-
                 if symbol_str.contains("*") {
                     let symbol = symbol_str.trim_matches('*');
                     println!("{}",symbol);
@@ -72,7 +65,13 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
                         _ => panic!("Unkown rule shape found!")
                     }
                 } else {
-                    rhs_symbols.push(symbol);
+                    let symbol = if terminals.contains(symbol_str) {
+                    Symbol::Terminal(symbol_str.to_string())
+                } else {
+                        non_terminals.insert(symbol_str.to_string());
+                        Symbol::NonTerminal(symbol_str.to_string())
+                };
+                rhs_symbols.push(symbol);
                 }
             }
 
@@ -92,10 +91,23 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
 
     }
 
-    let start_symbol = rules.first()
-        .map(|r| r.lhs.clone())
-        .unwrap_or_else(|| panic!("Grammar error: No valid production rules were processed"));
+   // let start_symbol = rules.first()
+   //     .map(|r| r.lhs.clone())
+   //     .unwrap_or_else(|| panic!("Grammar error: No valid production rules were processed"));
 
+    let start_symbol = rules.first().unwrap().lhs.clone();
+
+    for rule in &mut rules { rule.id += 1 }
+
+    let augmneted_start = format!("{}'", start_symbol);
+    rules.insert(0, ProductionRule { 
+        id: 0, 
+        lhs: augmneted_start.clone(), 
+        rhs: vec![Symbol::NonTerminal(start_symbol.clone())], 
+        rule_shape: Shapes::Passthrough 
+    });
+
+    non_terminals.insert(augmneted_start.clone());
 
     GrammarSpec { 
         rules, 
