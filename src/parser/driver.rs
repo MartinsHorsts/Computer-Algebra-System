@@ -140,16 +140,16 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
 
         Shapes::Function => {
 
-            let function_name = match children.remove(0) {
+            let mut zipped = children.into_iter().zip(rule.rhs.iter());
+
+            let (name_value, _) = zipped.next().unwrap();
+
+            let function_name = match name_value {
                 StackValue::Term(TokenData::Function(f_name)) => f_name,
-                _ => panic!("Function name is a node??"),
+                _ => panic!("Invalid function name"),
                 };
 
-            children.remove(0);
-            children.remove(children.len()-1);
-
-            let parameters = children.into_iter()
-                .zip(&rule.rhs)
+            let parameters = zipped
                 .filter(|(_, sym)| matches!(sym, Symbol::NonTerminal(_)))
                 .map(|(child, _)| stack_value_to_expr(child))
                 .collect();
