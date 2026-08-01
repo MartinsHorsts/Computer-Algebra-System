@@ -1,5 +1,6 @@
 mod tokeniser;
 mod parser;
+mod main_engine;
 
 use iced::{Element};
 use iced::widget::{column, text, text_input};
@@ -26,7 +27,7 @@ struct AppState {
 impl Default for AppState {
     fn default() -> Self {
         let grammar = load_grammar_from_file("math.grammar").unwrap();
-        let table = build_table_from_grammar();
+        let table = build_table_from_grammar(&grammar);
         print_parsing_table(&table);
         let lexer = tokeniser::Lexer::new(" ");
         let ast_result = parse_input(lexer.clone(), &grammar, &table);

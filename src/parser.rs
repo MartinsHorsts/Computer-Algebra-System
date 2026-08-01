@@ -12,10 +12,10 @@ pub use analysis::{compute_first_sets, compute_follow_sets};
 pub use lr_graph::{build_lr_automaton};
 pub use table::{Action, build_parsing_table, ParsingTable};
 
+use crate::parser::types::GrammarSpec;
 
-pub fn build_table_from_grammar () -> ParsingTable {
-    let grammar_result = load_grammar_from_file("math.grammar");
-    let grammar = grammar_result.unwrap();
+
+pub fn build_table_from_grammar (grammar: &GrammarSpec) -> ParsingTable {
     let automaton = build_lr_automaton(&grammar);
     let first_sets = compute_first_sets(&grammar);
     let follow_sets = compute_follow_sets(&grammar, &first_sets);
