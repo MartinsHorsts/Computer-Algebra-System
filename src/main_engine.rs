@@ -1,1 +1,3 @@
-mod basic_simplification;
+pub mod simplify;
+mod operator;
+mod traverse;
