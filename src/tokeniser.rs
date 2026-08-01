@@ -44,7 +44,7 @@ impl<'a> Lexer<'a> {
         self.skip_whitespace();
 
         match self.chars.next() {
-            Some(c) if "+-/*=()".contains(c) => {
+            Some(c) if "+-/*=()^".contains(c) => {
                 let token_name = match c {
                     '+' => "PLUS",
                     '-' => "MINUS",
@@ -53,6 +53,7 @@ impl<'a> Lexer<'a> {
                     '(' => "LPAREN",
                     ')' => "RPAREN",
                     '=' => "EQUAL",
+                    '^' => "EXP",
                     _ => "UNKOWN"
                 };
                 Token { token_type: TokenType::Operator(token_name.to_string()), token_data: TokenData::None }

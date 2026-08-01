@@ -58,7 +58,7 @@ pub fn build_parsing_table (
                                     }
                                     Action::Reduce(old_id) => {
                                         if *old_id != rule.id {
-                                            panic!("Shift/Reduce conflict found in State {} on terminal '{}' between rule {} and rule {}.", state.id, terminal, old_id, rule.id,)
+                                            panic!("Reduce/Reduce conflict found in State {} on terminal '{}' between rule {} and rule {}.", state.id, terminal, old_id, rule.id,)
                                         }
                                     }
                                     Action::Accept => {}
