@@ -29,7 +29,7 @@ pub fn build_parsing_table (
                     let key = (state.id, terminal_name.clone());
 
                     if let Some(existing) = action_table.get(&key) {
-                        panic!("Shift reduce conflict detected in state {} on terminal '{}'. Existing {:?}", state.id, terminal_name, existing);
+                        panic!("Reduce/Reduce conflict detected in state {} on terminal '{}'. Existing {:?}", state.id, terminal_name, existing);
                     }
                     action_table.insert(key,Action::Shift(target_id));
                 }
