@@ -5,13 +5,7 @@ use std::str::Chars;
 pub enum TokenType {
         VARIABLE,
         NUMBER,
-        PLUS,
-        MINUS,
-        MULT,
-        DIV,
-        LPAREN,
-        RPAREN,
-        EQUAL,
+        Operator(String),
         FUNCTION,
         EOF,
         Error,
@@ -50,13 +44,19 @@ impl<'a> Lexer<'a> {
         self.skip_whitespace();
 
         match self.chars.next() {
-            Some('+') => Token { token_type: TokenType::PLUS,   token_data: TokenData::None },
-            Some('-') => Token { token_type: TokenType::MINUS,  token_data: TokenData::None },
-            Some('=') => Token { token_type: TokenType::EQUAL,  token_data: TokenData::None },
-            Some('/') => Token { token_type: TokenType::DIV,    token_data: TokenData::None },
-            Some('*') => Token { token_type: TokenType::MULT,   token_data: TokenData::None },
-            Some('(') => Token { token_type: TokenType::LPAREN, token_data: TokenData::None },
-            Some(')') => Token { token_type: TokenType::RPAREN, token_data: TokenData::None },
+            Some(c) if "+-/*=()".contains(c) => {
+                let token_name = match c {
+                    '+' => "PLUS",
+                    '-' => "MINUS",
+                    '/' => "DIV",
+                    '*' => "MULT",
+                    '(' => "LPAREN",
+                    ')' => "RPAREN",
+                    '=' => "EQUAL",
+                    _ => "UNKOWN"
+                };
+                Token { token_type: TokenType::Operator(token_name.to_string()), token_data: TokenData::None }
+            }
 
             Some(c) if c.is_ascii_digit() => {
                 let mut num_str = c.to_string();

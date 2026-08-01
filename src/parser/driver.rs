@@ -5,11 +5,15 @@ use crate::tokeniser::TokenData;
 pub enum Expr {
     Number(i64),
     Variable(String),
-    Function(String,Box<Expr>), // Change 'String' Option to function type when function list is implemented
+    Function(String,Box<Expr>),
+    BinaryOp(String, Box<Expr>, Box<Expr>),
+    
+    /*
     Add(Box<Expr>,Box<Expr>),
     Sub(Box<Expr>,Box<Expr>),
     Mul(Box<Expr>,Box<Expr>),
     Div(Box<Expr>,Box<Expr>),
+    */
 }
 
 pub struct ParserError {
@@ -38,7 +42,15 @@ pub fn parse_input(
 
     loop {
         let current_state = state_stack.last().unwrap().clone();
-        let terminal_name: String = format!("{:?}", &current_lookahead.token_type);
+        let terminal_name: String = match &current_lookahead.token_type {
+            TokenType::Operator(op_name) => op_name.clone(),
+            TokenType::Error => "ERROR".to_string(),
+            TokenType::FUNCTION => "FUNCTION".to_string(),
+            TokenType::NUMBER => "NUMBER".to_string(),
+            TokenType::VARIABLE => "VARIABLE".to_string(),
+            TokenType::EOF => "EOF".to_string(),
+        };
+
         let action = table.action_table.get(&(current_state, terminal_name));
 
         if action == None {
@@ -152,18 +164,11 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
 
             let operator_symbol = &rule.rhs[1];
             if let Symbol::Terminal(operator_name) = operator_symbol {
-                match operator_name.as_str() {
-                    "PLUS" => Expr::Add(left_expr, right_expr),
-                    "MINUS" => Expr::Sub(left_expr, right_expr),
-                    "MULT" => Expr::Mul(left_expr, right_expr),
-                    "DIV" => Expr::Div(left_expr, right_expr),
-                    _ => panic!("Unknown operator name found!")
-                }
+                Expr::BinaryOp(operator_name.clone(), left_expr, right_expr)
             } else {
-                panic!("A")
+                panic!("Middle symbol of Binary Shape must be a Terminal")
             }
         }
-
         Shapes::Function => {
 
             if children.len() != 4 {
