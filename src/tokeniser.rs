@@ -35,12 +35,14 @@ pub struct Token {
 #[derive(Clone)]
 pub struct Lexer<'a> {
     chars: Peekable<Chars<'a>>,
+    eof_returned: bool,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
         Lexer {
-            chars: input.chars().peekable()
+            chars: input.chars().peekable(),
+            eof_returned: true,
         }
     }
 
@@ -113,9 +115,10 @@ impl<'a> Iterator for Lexer<'a> {
 
         fn next(&mut self) -> Option<Self::Item> {
             let next_token = self.next_token();
-            match next_token.token_type {
-                TokenType::EOF => None,
-                _ => Some(next_token),
+            if matches!(next_token.token_type, TokenType::EOF) {
+                if self.eof_returned { return None; }
+                self.eof_returned = true;
             }
+            Some(next_token)
         }
     }
