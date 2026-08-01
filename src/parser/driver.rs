@@ -5,7 +5,7 @@ use crate::tokeniser::TokenData;
 pub enum Expr {
     Number(i64),
     Variable(String),
-    Function(String,Box<Expr>),
+    Function(String,Vec<Expr>),
     BinaryOp(String, Box<Expr>, Box<Expr>),
     
     /*
@@ -107,60 +107,28 @@ pub fn parse_input(
 fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> Expr {
     match rule.rule_shape {
         Shapes::Leaf => {
-            if children.len() != 1 {
-                panic!("Expected 1 child, instead has '{}' children.",children.len());
-            }
-            match children.remove(0) {
-                StackValue::Term(TokenData::Number(num)) => Expr::Number(num),
-                StackValue::Term(TokenData::Variable(var)) => Expr::Variable(var),
-                _ => panic!("Expected Number or Variable")
-            }
+            if children.len() != 1 {panic!("Expected 1 child, instead has '{}' children.",children.len())}
+            stack_value_to_expr(children.pop().unwrap())
         }
+
         Shapes::Passthrough => {
-            if children.len() != 1 {
-                panic!("Expected 1 child, instead has '{}' children.",children.len());
-            }
-            match children.remove(0)  {
-                StackValue::Node(expr) => expr,
-                _ => panic!("Only nodes are valid for shape 'Passthrough'")
-            }
+            if children.len() != 1 {panic!("Expected 1 child, instead has '{}' children.",children.len())}
+            stack_value_to_expr(children.pop().unwrap())
         }
+
         Shapes::Parenthesized => {
-            if children.len() != 3 {
-                panic!("Expected 3 child, instead has '{}' children.",children.len());
-            }
-            match children.remove(1) {
-                StackValue::Node(expr) => expr,
-                _ => panic!("Only nodes are valid for shape 'Parenthesized'")
-            }
+            if children.len() != 3 {panic!("Expected 3 child, instead has '{}' children.",children.len())}
+            stack_value_to_expr(children.remove(1))
         }
+
         Shapes::Binary => {
-            if children.len() != 3 {
-                panic!("Expected 3 child, instead has '{}' children.",children.len());
-            }
-            let right_expr = match children.pop().unwrap() {
-                StackValue::Node(expr) => Box::new(expr),
-                StackValue::Term(term) => {
-                    match term {
-                        TokenData::Number(n) => Box::new(Expr::Number(n)),
-                        TokenData::Variable(v) => Box::new(Expr::Variable(v)),
-                        _ => panic!("Malformed Data!")
-                    }
-                }
-            };
+            if children.len() != 3 {panic!("Expected 3 child, instead has '{}' children.",children.len())}
+            
+            let right_expr = Box::new(stack_value_to_expr(children.pop().unwrap()));
             
             children.pop().unwrap();
 
-            let left_expr = match children.pop().unwrap() {
-                StackValue::Node(expr) => Box::new(expr),
-                StackValue::Term(term) => {
-                    match term {
-                        TokenData::Number(n) => Box::new(Expr::Number(n)),
-                        TokenData::Variable(v) => Box::new(Expr::Variable(v)),
-                        _ => panic!("Malformed Data!")
-                    }
-                }
-            };
+            let left_expr = Box::new(stack_value_to_expr(children.pop().unwrap()));
 
             let operator_symbol = &rule.rhs[1];
             if let Symbol::Terminal(operator_name) = operator_symbol {
@@ -169,36 +137,24 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 panic!("Middle symbol of Binary Shape must be a Terminal")
             }
         }
+
         Shapes::Function => {
 
-            if children.len() != 4 {
-                panic!("Expected 4 children, instead has {} children.", children.len())
-            };
+            let function_name = match children.remove(0) {
+                StackValue::Term(TokenData::Function(f_name)) => f_name,
+                _ => panic!("Function name is a node??"),
+                };
 
-            children.pop();
+            children.remove(0);
+            children.remove(children.len()-1);
 
-            let parameter = match children.pop().unwrap() {
-                StackValue::Node(node) => Box::new(node),
-                StackValue::Term(term) => match term {
-                    TokenData::Number(num) => Box::new(Expr::Number(num)),
-                    TokenData::Variable(var) => Box::new(Expr::Variable(var)),
-                    _ => panic!("a")
-                },
-            };
+            let parameters = children.into_iter()
+                .zip(&rule.rhs)
+                .filter(|(_, sym)| matches!(sym, Symbol::NonTerminal(_)))
+                .map(|(child, _)| stack_value_to_expr(child))
+                .collect();
 
-            children.pop();
-
-            let function_name = match children.pop().unwrap() {
-                StackValue::Node(_) => panic!("Function name is a node??"),
-                StackValue::Term(token_data) => {
-                    match token_data {
-                        TokenData::Function(f_name) => f_name,
-                        _ => panic!("TokenData of Function is not of type Function")
-                    }
-                } 
-            };
-
-            Expr::Function(function_name, parameter)
+            Expr::Function(function_name, parameters)
         }
     }
 }
@@ -212,4 +168,14 @@ fn build_parse_error(state: usize, lookahead_token: &Token, table: &ParsingTable
         }
     }
     return ParserError {found: format!("{:?}", lookahead_token), expected: expected};
+}
+
+fn stack_value_to_expr (value: StackValue) -> Expr {
+    match value {
+        StackValue::Node(expr) => expr,
+        StackValue::Term(TokenData::Number(num)) => Expr::Number(num),
+        StackValue::Term(TokenData::Variable(var)) => Expr::Variable(var),
+        StackValue::Term(t) => panic!("Cannot convert {:?} directly into expr", t)
+    }
+
 }
