@@ -14,7 +14,7 @@ pub fn denary_to_big_int (str: String) -> BigInt{
     let mut remaining_str: &str = &str;
 
     while !remaining_str.is_empty() {
-        let mut split_id = std::cmp::min(MAX_BASE10_DIGITS, remaining_str.len());
+        let split_id = std::cmp::min(MAX_BASE10_DIGITS, remaining_str.len());
 
         let (chunk, rest) = remaining_str.split_at(split_id);
         str_chunks.push(chunk.to_string());

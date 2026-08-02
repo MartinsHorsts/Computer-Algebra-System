@@ -1,5 +1,5 @@
 use crate::big_num::types::{BigInt, BigUInt, Sign};
-use std::ops::Add as add;
+use std::ops::Add as Add;
 
 impl BigUInt {
     fn add_magnitude(&self, other: &BigUInt) -> BigUInt {
@@ -47,7 +47,7 @@ impl BigUInt {
 }
 
 
-impl add<BigInt> for BigInt {
+impl Add<BigInt> for BigInt {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -65,7 +65,7 @@ impl add<BigInt> for BigInt {
     }
 }
 
-impl add<u64> for BigInt {
+impl Add<u64> for BigInt {
     type Output = BigInt;
 
     fn add(mut self, rhs: u64) -> Self::Output {
@@ -87,3 +87,4 @@ impl add<u64> for BigInt {
         }
     }
 }
+    
