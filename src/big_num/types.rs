@@ -1,4 +1,6 @@
-pub enum sign {
+
+#[derive(Clone, Copy)]
+pub enum Sign {
     Positive,
     Negative,
     Zero
@@ -9,7 +11,7 @@ pub struct BigUInt {
 }
 
 pub struct BigInt {
-    pub sign: sign,
+    pub sign: Sign,
     pub data: BigUInt
 }
 

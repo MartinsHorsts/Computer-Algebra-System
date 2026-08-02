@@ -1,12 +1,12 @@
-use crate::big_num::types::{BigInt, BigUInt, sign};
+use crate::big_num::types::{BigInt, BigUInt, Sign};
 
 const MAX_BASE10_DIGITS: usize = 19;
-const BASE10_CHUNK_MULTIPLIER: usize = 10_000_000_000_000_000_000; // 10^19
+const BASE10_CHUNK_MULTIPLIER: u64 = 10_000_000_000_000_000_000; // 10^19
 
 pub fn denary_to_big_int (str: String) -> BigInt{
     let mut big_int = BigInt 
     { 
-        sign: sign::Zero,
+        sign: Sign::Zero,
         data: BigUInt {arms: vec!(0)} 
     };
     
