@@ -1,9 +1,9 @@
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Ord, Eq, PartialEq, PartialOrd)]
 pub enum Sign {
-    Positive,
-    Negative,
-    Zero
+    Positive = 3,
+    Negative = 1,
+    Zero = 2
 }
 
 pub struct BigUInt {
