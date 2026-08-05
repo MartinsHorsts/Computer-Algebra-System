@@ -60,7 +60,8 @@ impl Add<BigInt> for BigInt {
                     data: self.data.add_magnitude(&rhs.data) 
                 }
             },
-            _ => todo!()
+            (Sign::Positive, Sign::Negative) => self - rhs,
+            (Sign::Negative, Sign::Positive) => rhs - self,
         }
     }
 }
@@ -70,7 +71,7 @@ impl Add<u64> for BigInt {
 
     fn add(mut self, rhs: u64) -> Self::Output {
         if rhs == 0 { return self }
-        match self.sign {
+        match self.sign{
             Sign::Zero => {
                 self.sign = Sign::Positive;
                 self.data.arms.clear();
@@ -81,8 +82,8 @@ impl Add<u64> for BigInt {
                 self.data = self.data.add_u64(rhs);
                 self
             }
-            Sign::Negative => {
-                todo!()
+            Sign::Negative => { // -5 + 15
+                self - rhs
             }
         }
     }
