@@ -1,11 +1,10 @@
 use crate::big_num::types::BigUInt;
 
 impl BigUInt {
-    fn normalise(mut big_uint: BigUInt) {
-        for arm in big_uint.arms.len()..0 {
-            if arm == 0 {
-                big_uint.arms.pop();
-            }
+    pub fn normalise(mut self) -> BigUInt {
+        while self.arms.len() > 1 && self.arms.last() == Some(&0) {
+            self.arms.pop();
         }
+        self
     }
 }

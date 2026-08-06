@@ -2,7 +2,7 @@ use crate::big_num::types::{BigInt, BigUInt, Sign};
 use std::ops::Add as Add;
 
 impl BigUInt {
-    fn add_magnitude(&self, other: &BigUInt) -> BigUInt {
+    pub fn add_magnitude(&self, other: &BigUInt) -> BigUInt {
         let mut result_arms = Vec::new();
         let mut carry: u64 = 0;
 

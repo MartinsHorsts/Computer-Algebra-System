@@ -1,15 +1,15 @@
-use crate::big_num::types::{BigInt, BigUInt, Sign};
+use crate::big_num::types::{BigInt, BigUInt, Sign::{self, Positive}};
 use std::ops::Sub as Sub;
 
 impl BigUInt {
-    fn sub_magnitude(&self, other: &BigUInt) -> BigUInt {
+    pub fn sub_magnitude(&self, other: &BigUInt) -> BigUInt {
         let mut result_arms: Vec<u64> = Vec::new();
         let mut borrow: u64 = 0;
         let max_length = std::cmp::max(self.arms.len(),other.arms.len());
 
         for i in 0..max_length {
-            let a = self.arms.get(i).copied().unwrap();
-            let b = self.arms.get(i).copied().unwrap();
+            let a = self.arms.get(i).copied().unwrap_or(0);
+            let b = other.arms.get(i).copied().unwrap_or(0);
 
             let (arm_diff, underflow) = a.overflowing_sub(b);
             let (borrow_diff, underflow_borrow) = arm_diff.overflowing_sub(borrow);
@@ -32,6 +32,7 @@ impl Sub<BigInt> for BigInt {
     fn sub(self, rhs: Self) -> Self::Output {
         match (&self.sign, &rhs.sign) {
             (_, Sign::Zero) => self,
+
             (Sign::Zero, _) => {
 
                 let inverted_sign = if rhs.sign == Sign::Positive {Sign::Negative} else {Sign::Positive};
@@ -42,48 +43,66 @@ impl Sub<BigInt> for BigInt {
                     data: rhs.data 
                 }
             },
+
             (Sign::Positive, Sign::Positive) => {
-                if self.data >= rhs.data {
-                    BigInt 
-                    {
-                        sign: Sign::Positive,
-                        data: self.data.sub_magnitude(&rhs.data)
+                match self.data.cmp(&rhs.data) {
+                    std::cmp::Ordering::Greater => {
+                        BigInt 
+                        { 
+                            sign: Sign::Positive, 
+                            data: self.data.sub_magnitude(&rhs.data).normalise() 
+                        }
+                    },
+                    std::cmp::Ordering::Equal => {
+                        BigInt 
+                        { 
+                            sign: Sign::Zero, 
+                            data: BigUInt {arms: vec![0]} 
+                        }
+                    },
+                    std::cmp::Ordering::Less => {
+                        BigInt 
+                        { 
+                            sign: Sign::Negative, 
+                            data: rhs.data.sub_magnitude(&self.data).normalise() 
+                        }
                     }
-                } else {
-                    BigInt 
-                    {
-                        sign: Sign::Negative,
-                        data: rhs.data.sub_magnitude(&self.data)
-                    }
-                }  
+                }
             },
+
             (Sign::Positive, Sign::Negative) => {
-                self + rhs
-            }   
-            (Sign::Negative, Sign::Positive) => {
-                BigInt { sign: Sign::Zero, data: BigUInt { arms: Vec::new() } } - (self + rhs)
-            }
+                self + BigInt {sign: Positive, data: rhs.data}
+            },
+
+            (Sign::Negative, Sign::Positive) => { // -5 - 2
+                BigInt 
+                { 
+                    sign: Sign::Negative, 
+                    data: self.data.add_magnitude(&rhs.data) 
+                }
+            }, 
+
             (Sign::Negative, Sign::Negative) => {
                 match self.data.cmp(&rhs.data) {
                     std::cmp::Ordering::Greater => {
                         BigInt 
                         { 
                             sign: Sign::Negative, 
-                            data: self.data.sub_magnitude(&rhs.data) 
+                            data: self.data.sub_magnitude(&rhs.data).normalise() 
                         }
                     }
                     std::cmp::Ordering::Less => {
                         BigInt 
                         { 
                             sign: Sign::Positive, 
-                            data: rhs.data.sub_magnitude(&self.data)
+                            data: rhs.data.sub_magnitude(&self.data).normalise()
                         }
                     }
                     std::cmp::Ordering::Equal => {
                         BigInt 
                         { 
                             sign: Sign::Zero, 
-                            data: BigUInt { arms: Vec::new() }
+                            data: BigUInt { arms: vec!(0) }
                         }
                     }
                 }
