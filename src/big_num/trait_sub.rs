@@ -2,10 +2,10 @@ use crate::big_num::types::{BigInt, BigUInt, Sign::{self, Positive}};
 use std::ops::Sub as Sub;
 
 impl BigUInt {
-    pub fn sub_magnitude(&self, other: &BigUInt) -> BigUInt {
-        let mut result_arms: Vec<u64> = Vec::new();
+    pub fn sub_magnitude(&self, other: &BigUInt) -> BigUInt {    
         let mut borrow: u64 = 0;
         let max_length = std::cmp::max(self.arms.len(),other.arms.len());
+        let mut result_arms: Vec<u64> = vec![0u64; max_length]; 
 
         for i in 0..max_length {
             let a = self.arms.get(i).copied().unwrap_or(0);

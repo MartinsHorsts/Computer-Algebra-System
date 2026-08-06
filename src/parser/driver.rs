@@ -1,9 +1,9 @@
-use crate::{parser::{Action, ParsingTable,types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
+use crate::{big_num::types::BigInt, parser::{Action, ParsingTable,types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
 use crate::tokeniser::TokenData;
 
 #[derive(Debug)]
 pub enum Expr {
-    Number(i64),
+    Number(BigInt),
     Variable(String),
     Function(String,Vec<Expr>),
     BinaryOp(String, Box<Expr>, Box<Expr>),

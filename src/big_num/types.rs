@@ -6,12 +6,12 @@ pub enum Sign {
     Zero = 2
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BigUInt {
     pub arms: Vec<u64>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BigInt {
     pub sign: Sign,
     pub data: BigUInt

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::big_num::types::*;
+    use crate::big_num::{base_converter::denary_to_big_int, types::*};
 
 
     #[test]
@@ -81,5 +81,15 @@ mod tests {
         let expected = BigInt { sign: Sign::Positive, data: BigUInt{arms: vec!(9223372036854775808)}};
 
         assert_eq!(sum, expected)
+    }
+
+    #[test]
+    fn convert_base10_to_big_int () {
+        let base10_str = "340282366920938463463374607431768211455";
+        let converted_num = denary_to_big_int(base10_str.to_string());
+
+        let expected = BigInt { sign: Sign::Positive, data: BigUInt{arms: vec!(u64::MAX,u64::MAX)}}; 
+
+        assert_eq!(converted_num,expected)
     }
 }

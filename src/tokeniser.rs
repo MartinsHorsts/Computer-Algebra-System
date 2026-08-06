@@ -1,6 +1,10 @@
 use std::iter::Peekable;
 use std::str::Chars;
 
+use crate::big_num::base_converter::denary_to_big_int;
+use crate::big_num::types::BigInt;
+use crate::tokeniser::TokenType::NUMBER;
+
 #[derive(Debug)]
 pub enum TokenType {
         VARIABLE,
@@ -13,7 +17,7 @@ pub enum TokenType {
 
 #[derive(Debug, Clone)]
 pub enum TokenData {
-    Number(i64),
+    Number(BigInt),
     Variable(String),
     Function(String), 
     ErrorMessage(String),
@@ -70,10 +74,7 @@ impl<'a> Lexer<'a> {
                     }
                 }
 
-                match num_str.parse::<i64>() {
-                    Ok(valid_num) => Token {token_type: TokenType::NUMBER, token_data: TokenData::Number(valid_num)},
-                    Err(_) => Token {token_type: TokenType::Error, token_data: TokenData::ErrorMessage(format!("Number '{}' is too large for a 64 bit integer", num_str))},
-                }
+                Token { token_type: NUMBER, token_data: TokenData::Number(denary_to_big_int(num_str)) }
             }
 
             Some(c) if c.is_ascii_alphabetic() => {

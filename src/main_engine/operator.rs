@@ -1,3 +1,5 @@
+use crate::big_num::types::{BigInt, BigUInt, Sign};
+
 pub enum Operator {
     Add,
     Sub,
@@ -18,24 +20,14 @@ impl Operator {
         }
     }
 
-    pub fn apply(&self, a: i64, b: i64) -> Option<i64> {
+    pub fn apply(&self, a: BigInt, b: BigInt) -> Option<BigInt> {
         match self {
             Operator::Add => Some(a+b),
             Operator::Sub => Some(a-b),
             Operator::Mul => Some(a*b),
-            Operator::Div => (b != 0 && a % b == 0 ).then(|| a/b),
+            Operator::Div => todo!(), //(b != 0 && a % b == 0 ).then(|| a/b),
             Operator::Exp => {
-                let mut total:i64 = a;
-                if b != 0 && b >= 0{
-                    for _i in 1..b {
-                        total = total * a
-                    }
-                    return Some(total)
-                } else if b == 0 {
-                    return Some(1)
-                } else {
-                    return None
-                }
+                todo!()
             },
         }
     }

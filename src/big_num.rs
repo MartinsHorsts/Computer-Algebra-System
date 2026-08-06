@@ -1,6 +1,6 @@
-mod types;
-mod normalise;
-mod base_converter;
+pub mod types;
+pub mod normalise;
+pub mod base_converter;
 mod trait_add;
 mod trait_sub;
 mod trait_cmp;

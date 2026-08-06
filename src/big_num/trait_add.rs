@@ -3,10 +3,11 @@ use std::ops::Add as Add;
 
 impl BigUInt {
     pub fn add_magnitude(&self, other: &BigUInt) -> BigUInt {
-        let mut result_arms = Vec::new();
+        
         let mut carry: u64 = 0;
-
         let max_length = std::cmp::max(self.arms.len(), other.arms.len());
+        let mut result_arms = vec![0u64; max_length+1];
+
         for i in 0..max_length {
             let a = self.arms.get(i).copied().unwrap_or(0);
             let b = other.arms.get(i).copied().unwrap_or(0);
@@ -57,7 +58,7 @@ impl Add<BigInt> for BigInt {
             (Sign::Positive, Sign::Positive) | (Sign::Negative, Sign::Negative) => {
                 BigInt { 
                     sign: self.sign.clone(), 
-                    data: self.data.add_magnitude(&rhs.data) 
+                    data: self.data.add_magnitude(&rhs.data).normalise() 
                 }
             },
             (Sign::Positive, Sign::Negative) => self - rhs,
