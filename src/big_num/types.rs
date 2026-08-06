@@ -17,7 +17,7 @@ pub struct BigInt {
     pub data: BigUInt
 }
 
-enum parseError {
+enum ParseError {
     InvalidDigit,
     EmptyString,
 }
