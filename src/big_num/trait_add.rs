@@ -14,13 +14,13 @@ impl BigUInt {
 
             let sum = a as u128 + b as u128 + carry as u128;
 
-            result_arms.push(sum as u64);
+            result_arms[i] = sum as u64;
 
             carry = (sum >> 64) as u64;
         }
 
         if carry > 0 {
-            result_arms.push(carry);
+            result_arms[max_length] = carry;
         }
 
         BigUInt { arms: result_arms }

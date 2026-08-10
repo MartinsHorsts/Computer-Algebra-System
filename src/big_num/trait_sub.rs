@@ -14,7 +14,7 @@ impl BigUInt {
             let (arm_diff, underflow) = a.overflowing_sub(b);
             let (borrow_diff, underflow_borrow) = arm_diff.overflowing_sub(borrow);
 
-            result_arms.push(borrow_diff);
+            result_arms[i] = borrow_diff;
 
             borrow = if underflow || underflow_borrow { 1 } else { 0 }
         }         
