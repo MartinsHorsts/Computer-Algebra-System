@@ -21,3 +21,24 @@ impl shl<u32> for BigInt {
         return BigInt {sign: self.sign.clone(), data: BigUInt { arms: output }.normalise()}
     }
 }
+
+impl shl<u32> for BigUInt {
+    type Output = BigUInt;
+
+    fn shl(self, rhs: u32) -> Self::Output {
+        if rhs == 0 {
+            return self
+        }
+
+        let length = self.arms.len();
+        let mut output = vec![0u64; length + 1];
+        let mut carry = 0u64;
+
+        for i in 0..length {
+            output[i] = (self.arms[i] << rhs) | carry;
+            carry = self.arms[i] >> (64 - rhs);
+        }
+
+        return BigUInt {arms: output}.normalise()
+    }
+}
