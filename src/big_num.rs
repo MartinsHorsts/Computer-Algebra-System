@@ -6,4 +6,6 @@ mod trait_sub;
 mod trait_cmp;
 mod tests;
 mod trait_mul;
-// mod trait_div;
+mod trait_div;
+mod trait_shr;
+mod trait_shl;
