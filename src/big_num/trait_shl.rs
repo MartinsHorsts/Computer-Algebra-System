@@ -4,8 +4,9 @@ use std::ops::Shl as shl;
 impl shl<u32> for BigInt {
     type Output = BigInt;
 
-    fn shl(self, rhs: u32) -> Self::Output {
+    fn shl(mut self, rhs: u32) -> Self::Output {
         if rhs == 0 {
+            self.data.arms.push(0u64);
             return self
         }
 
@@ -18,15 +19,18 @@ impl shl<u32> for BigInt {
             carry = self.data.arms[i] >> (64 - rhs);
         }
 
-        return BigInt {sign: self.sign.clone(), data: BigUInt { arms: output }.normalise()}
+        output[length] = carry;
+
+        return BigInt {sign: self.sign.clone(), data: BigUInt { arms: output }}
     }
 }
 
 impl shl<u32> for BigUInt {
     type Output = BigUInt;
 
-    fn shl(self, rhs: u32) -> Self::Output {
+    fn shl(mut self, rhs: u32) -> Self::Output {
         if rhs == 0 {
+            self.arms.push(0u64);
             return self
         }
 
@@ -39,6 +43,8 @@ impl shl<u32> for BigUInt {
             carry = self.arms[i] >> (64 - rhs);
         }
 
-        return BigUInt {arms: output}.normalise()
+        output[length] = carry;
+
+        return BigUInt {arms: output}
     }
 }

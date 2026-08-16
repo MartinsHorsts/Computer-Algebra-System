@@ -26,17 +26,18 @@ impl BigUInt {
         }
         else {
             let shift = divisor.arms[divisor_length - 1].leading_zeros();
-            let mut d = if shift == 0 {divisor} else {divisor >> shift};
+            let mut d = if shift == 0 {divisor} else {divisor << shift};
             d.arms.truncate(divisor_length);
+            let original_len = self.arms.len();
             let mut u = self << shift;
 
             let d1 = d.arms[divisor_length - 1];
             let d0 = d.arms[divisor_length - 2];
             let v = reciprocal_3by2(d1, d0);
 
-            let total = u.arms.len();
-            if total < divisor_length + 1 {
-                u.arms.resize(divisor_length+1, 0);
+            let total = (original_len + 1).max(divisor_length + 1);
+            if u.arms.len() < total {
+                u.arms.resize(total, 0);
             }
             let m = u.arms.len() - divisor_length - 1;
             let mut q = vec![0u64; m + 1];
@@ -146,7 +147,7 @@ impl Div<u64> for BigInt {
 
 fn reciprocal_2by1 (d: u64) -> u64 {
     debug_assert!(d >= 1 << 63);
-    ((u128::MAX / d as u128) - 1u128 << 64) as u64
+    ((u128::MAX / d as u128) - (1u128 << 64)) as u64
 }
 
 fn div_2by1 (u1: u64, u0: u64, d: u64, v: u64) -> (u64, u64) {
@@ -162,7 +163,7 @@ fn div_2by1 (u1: u64, u0: u64, d: u64, v: u64) -> (u64, u64) {
 
     if r > q0 {
         q1 = q1.wrapping_sub(1);
-        r = r.wrapping_add(1);
+        r = r.wrapping_add(d);
     } 
 
     if r >= d {
@@ -221,11 +222,11 @@ fn div3by2 (u2: u64, u1: u64, u0: u64, d1: u64, d0: u64, v: u64) -> (u64, u64, u
 
     if (r >> 64) as u64 >= q0 {
         q1 = q1.wrapping_sub(1);
-        r = r.wrapping_add(1);
+        r = r.wrapping_add(d);
     }
     if r >= d {
         q1 = q1.wrapping_add(1);
-        r = r.wrapping_sub(1);
+        r = r.wrapping_sub(d);
     }
     
     (q1, (r >> 64) as u64, r as u64)

@@ -32,10 +32,10 @@ impl shr<u32> for BigUInt {
         }
 
         let length = self.arms.len();
-        let mut output = vec![0u64; length + 1];
+        let mut output = vec![0u64; length];
         let mut carry = 0u64;
 
-        for i in 0..length {
+        for i in (0..length).rev() {
             output[i] = (self.arms[i] >> rhs) | carry;
             carry = self.arms[i] << (64 - rhs);
         }
