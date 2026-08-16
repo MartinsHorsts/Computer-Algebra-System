@@ -32,7 +32,7 @@ impl Ord for BigUInt {
         if self.arms.len() > other.arms.len() {return std::cmp::Ordering::Greater}
         if self.arms.len() < other.arms.len() {return std::cmp::Ordering::Less}
 
-        for i in 0..self.arms.len() {
+        for i in (0..self.arms.len()).rev() {
             let a = *self.arms.get(i).clone().unwrap();
             let b = *other.arms.get(i).clone().unwrap();
             if a != b {
