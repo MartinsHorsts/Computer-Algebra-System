@@ -25,7 +25,15 @@ impl Operator {
             Operator::Add => Some(a+b),
             Operator::Sub => Some(a-b),
             Operator::Mul => Some(a*b),
-            Operator::Div => todo!(), //(b != 0 && a % b == 0 ).then(|| a/b),
+            Operator::Div => {
+                if b.sign != Sign::Zero {
+                    let (ans, rem) = a / b;
+                    if rem.sign == Sign::Zero {
+                        return Some(ans)
+                    }
+                }
+                None
+            }, //(b != 0 && a % b == 0 ).then(|| a/b),
             Operator::Exp => {
                 todo!()
             },

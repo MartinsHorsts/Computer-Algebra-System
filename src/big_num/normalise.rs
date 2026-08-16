@@ -7,4 +7,17 @@ impl BigUInt {
         }
         self
     }
+    pub fn is_zero(&self) -> bool {
+        if self.arms.len() > 1 {
+            return false
+        } else if self.arms.len() == 1 {
+            if self.arms[0] == 0u64 {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
+        }
+    }
 }
