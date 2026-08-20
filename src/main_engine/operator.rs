@@ -1,4 +1,4 @@
-use crate::big_num::types::{BigInt, BigUInt, Sign};
+use crate::{big_num::types::{BigInt, BigUInt, Sign}, main_engine::functions::fn_power::power};
 
 pub enum Operator {
     Add,
@@ -35,7 +35,8 @@ impl Operator {
                 None
             }, //(b != 0 && a % b == 0 ).then(|| a/b),
             Operator::Exp => {
-                todo!()
+
+                Some(power(a,b.data.arms[0] as u32))
             },
         }
     }
