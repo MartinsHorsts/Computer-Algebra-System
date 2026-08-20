@@ -1,5 +1,6 @@
-%tokens NUMBER VARIABLE PLUS MINUS MULT DIV LPAREN RPAREN FUNCTION EXP
+%tokens NUMBER VARIABLE PLUS MINUS MULT DIV LPAREN RPAREN FUNCTION EXP EQUALS
 
+S -> E EQUALS E *Equation | E *Passthrough
 E -> E PLUS T *Binary | E MINUS T *Binary | T *Passthrough
 T -> T MULT U *Binary | T DIV U *Binary | T F *Implicit | U *Passthrough
 U -> MINUS U *Unary | PLUS U *Unary | F *Passthrough

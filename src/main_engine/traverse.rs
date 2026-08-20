@@ -5,7 +5,9 @@ impl Expr {
         match self {
             Expr::Number(_) | Expr::Variable(_) => {}
             Expr::Function(_, paramters) => paramters.into_iter().for_each(&mut f),
-            Expr::BinaryOp(_,lhs ,rhs ) => {f(lhs); f(rhs);}
+            Expr::BinaryOp(_,lhs ,rhs ) => {f(lhs); f(rhs);},
+            Expr::UnaryOp(_, expr) => {f(expr)},
+            Expr::Equation(lhs,rhs) => {f(lhs); f(rhs);},
         }
     }
 }

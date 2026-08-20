@@ -9,7 +9,8 @@ pub enum Expr {
     Variable(String),
     Function(String,Vec<Expr>),
     BinaryOp(String, Box<Expr>, Box<Expr>),
-    UnaryOp(String, Box<Expr>)
+    UnaryOp(String, Box<Expr>),
+    Equation(Box<Expr>, Box<Expr>)
     
     /*
     Add(Box<Expr>,Box<Expr>),
@@ -178,6 +179,14 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
             if children.len() != 2 {panic!("Expected 2 child, instead has '{}' children.",children.len())}
 
             Expr::BinaryOp("MULT".to_string(), Box::new(stack_value_to_expr(children[0].clone())), Box::new(stack_value_to_expr(children[1].clone())))
+        }
+        Shapes::Equation => {
+            if children.len() != 3 {panic!("Expected 3 child, instead has '{}' children.",children.len())}
+
+            let right_expr = Box::new(stack_value_to_expr(children.pop().unwrap()));
+            children.pop().unwrap();
+            let left_expr = Box::new(stack_value_to_expr(children.pop().unwrap()));
+            Expr::Equation(left_expr, right_expr)
         }
     }
 }

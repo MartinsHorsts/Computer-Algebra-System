@@ -56,7 +56,7 @@ impl<'a> Lexer<'a> {
                     '*' => "MULT",
                     '(' => "LPAREN",
                     ')' => "RPAREN",
-                    '=' => "EQUAL",
+                    '=' => "EQUALS",
                     '^' => "EXP",
                     _ => "UNKOWN"
                 };

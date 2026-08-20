@@ -14,7 +14,8 @@ pub enum Shapes {
     Leaf,
     Function,
     Unary,
-    Implicit
+    Implicit,
+    Equation,
 }
 
 #[derive(Debug,Clone)]
