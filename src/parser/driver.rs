@@ -1,12 +1,15 @@
+use core::panic;
+
 use crate::{big_num::types::BigInt, parser::{Action, ParsingTable,types::{GrammarSpec, ProductionRule, Shapes, Symbol}}, tokeniser::{Lexer, Token, TokenType}};
 use crate::tokeniser::TokenData;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Number(BigInt),
     Variable(String),
     Function(String,Vec<Expr>),
     BinaryOp(String, Box<Expr>, Box<Expr>),
+    UnaryOp(String, Box<Expr>)
     
     /*
     Add(Box<Expr>,Box<Expr>),
@@ -21,6 +24,7 @@ pub struct ParserError {
     pub expected: String,
 }
 
+#[derive(Clone)]
 enum StackValue {
     Term(TokenData),
     Node(Expr),
@@ -155,6 +159,25 @@ fn build_expr_from_rule(rule: &ProductionRule,mut children: Vec<StackValue>) -> 
                 .collect();
 
             Expr::Function(function_name, parameters)
+        }
+        Shapes::Unary => {
+            if children.len() != 2 {panic!("Expected 2 child, instead has '{}' children.",children.len())}
+
+            let operand_expr = Box::new(stack_value_to_expr(children.pop().unwrap()));
+
+            children.pop().unwrap();
+
+            let operator_symbol = &rule.rhs[0];
+            if let Symbol::Terminal(operator_name) = operator_symbol {
+                Expr::UnaryOp(operator_name.clone(), operand_expr)
+            } else {
+                panic!("First symbol of Unary Shape must be a Terminal")
+            }
+        }
+        Shapes::Implicit => {
+            if children.len() != 2 {panic!("Expected 2 child, instead has '{}' children.",children.len())}
+
+            Expr::BinaryOp("MULT".to_string(), Box::new(stack_value_to_expr(children[0].clone())), Box::new(stack_value_to_expr(children[1].clone())))
         }
     }
 }

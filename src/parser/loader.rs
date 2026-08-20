@@ -63,6 +63,8 @@ pub fn parse_grammar_lines (file_content: &str) -> GrammarSpec {
                         "Passthrough" => {rule_shape = Shapes::Passthrough},
                         "Parenthesized" => {rule_shape = Shapes::Parenthesized},
                         "Function" => {rule_shape = Shapes::Function},
+                        "Unary" => {rule_shape = Shapes::Unary},
+                        "Implicit" => {rule_shape = Shapes::Implicit}
                         _ => panic!("Unkown rule shape found!")
                     }
                 } else {

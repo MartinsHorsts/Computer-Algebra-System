@@ -12,7 +12,9 @@ pub enum Shapes {
     Passthrough,
     Parenthesized,
     Leaf,
-    Function
+    Function,
+    Unary,
+    Implicit
 }
 
 #[derive(Debug,Clone)]
